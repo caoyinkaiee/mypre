@@ -1,0 +1,60 @@
+#!/bin/bash
+
+ timeDnbi=$(date "+%Y-%m-%d-%H-%M")
+is_centos=$( cat /etc/os-release |grep -i 'CentOS' |wc -l )
+
+function Change_source(){
+ 	
+ if [ $is_centos -eq 0 ];then 
+       	sudo sed -i "s@http://http.kali.org/kali@https://mirrors.tuna.tsinghua.edu.cn/kali@g" /etc/apt/sources.list
+  	if [ $? -ne 0 ];then
+        	echo " Change_source失败 \n"
+  	fi
+ else
+	wget -O /etc/yum.repos.d/CentOS-Bace.repo http://mirrors.aliyum.com/Centos-7.repo  | bash > /dev/null 2>&1
+	  yum clean all    | bash > /dev/null 2>&1
+	  yum makecache   | bash > /dev/null 2>&1
+  fi
+}
+
+function Change_vi(){
+		file="/etc/vim/vimrc"
+ 		line1="set relativenumber" 
+	if [ -f /etc/vim/vimrc ];then
+		#file  "/etc/vim/vimrc"
+ 		#line1  "set relativenumber" 
+		if ! grep -qF "$line1" "$file"; then
+	    	echo "$line1" >> "$file"
+		fi
+	else 
+		if [ -f /etc/vimrc ];then
+		file="/etc/vimrc"
+			if ! grep -qF "$line1" "$file"; then
+			echo "$line1" >> "$file"
+			fi
+		fi
+	fi
+}
+
+#######
+function main(){
+  [ $UID -ne 0 ] && echo '需要使用Root权限执行' && exit 1;
+	echo $is_centos
+	Change_source
+	Change_vi
+  # case "$1" in
+  #   "check")
+  #     BaseCheck
+  #     ;;
+  #   "fix")
+	# #根据输入的调用不同的方法
+  #     BaseFix
+  #     ;;
+  #   *)
+  #     echo "使用参数check进行检查,或者fix进行加固"
+  #     exit 1
+  #     ;;
+  # esac
+}
+
+main $@
