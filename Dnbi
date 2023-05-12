@@ -3,6 +3,8 @@
  timeDnbi=$(date "+%Y-%m-%d-%H-%M")
 is_centos=$( cat /etc/os-release |grep -i 'CentOS' |wc -l )
 
+
+#centos 不足支撑软件安装
 function Change_source(){
  	
  if [ $is_centos -eq 0 ];then 
